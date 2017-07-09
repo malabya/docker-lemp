@@ -1,0 +1,36 @@
+nginx:
+  build: ./nginx/
+  ports:
+    - 8080:80
+  links:
+    - php
+  volumes:
+    - ./logs/nginx-error.log:/var/log/nginx/error.log
+    - ./logs/nginx-access.log:/var/log/nginx/access.log
+    - ./docroot:/var/www/html
+
+php:
+  build: ./php
+  expose:
+    - 9000
+  links:
+    - mysql
+  volumes:
+    - ./docroot:/var/www/html
+
+mysql:
+  image: mysql:latest
+  ports:
+    - 3306:3306
+  environment:
+    MYSQL_ROOT_PASSWORD: admin
+    MYSQL_DATABASE: drupalci
+
+phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - 8085:80
+    links:
+        - mysql
+    environment:
+        PMA_HOST: mysql
