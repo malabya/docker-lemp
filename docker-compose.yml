@@ -15,8 +15,12 @@ php:
     - 9000
   links:
     - mysql
+    - drush
   volumes:
     - ./docroot:/var/www/html
+    - /usr/local/bin/drush:/drush/drush
+  volumes_from:
+    - mysql
 
 mysql:
   image: mysql:latest
@@ -25,6 +29,9 @@ mysql:
   environment:
     MYSQL_ROOT_PASSWORD: admin
     MYSQL_DATABASE: drupalci
+  volumes:
+    - /var/lib/mysql
+    - /usr/bin
 
 phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -34,3 +41,11 @@ phpmyadmin:
         - mysql
     environment:
         PMA_HOST: mysql
+
+drush:
+  image: drush/drush:8
+  links:
+    - composer
+
+composer:
+  image: composer:1.1
